@@ -4,27 +4,30 @@ echo " Welcome To Employee Wage Computation Problem "
 
 PartTime=1
 FullTime=2
-totalwage=0;
+totalHrs=0;
+TotalWorkingDays=0;
+HrsInMonth=100;
 empRatePerHrs=20;
 NumberOfWorkingDays=20;
 
-for(( Day=1; Day<=$NumberOfWorkingDays; Day++ ))
+while [[ $totalHrs -lt $HrsInMonth && $TotalWorkingDays -lt $NumberOfWorkingDays ]]
 do
-	randomCheck=$(($RANDOM%2));
-	case $randomCheck in
-		$FullTime)
-			empHrs=8
-			;;
-		$PartTime)
-			empHrs=4
-			;;
-		*)
-			empHrs=0
-			;;
-	esac
-
-wage=$(($empHrs*$empRatePerHrs));
-totalwage=$(($totalwage+$wage))
-
+	((TotalWorkingDays++))
+	randomCheck=$(($RANDOM%3));
+		case $randomCheck in
+			$FullTime)
+				empHrs=8
+				;;
+			$PartTime)
+				empHrs=4
+				;;
+			*)
+				empHrs=0
+				;;
+		esac
+		totalHrs=$(($totalHrs+$empHrs));
 done
-echo "Employee Wage " $totalwage;
+totalwage=$(($totalHrs*$empRatePerHrs));
+echo "Employee Work Hour "$totalHrs
+echo "Employee Salary "$totalwage
+
