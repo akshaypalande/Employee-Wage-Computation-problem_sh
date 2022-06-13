@@ -1,62 +1,59 @@
-!/bin/bash -x
+#!/bin/bash -x
 
-printf "Welcome To Employee Wage Computation Problem \n"
+echo "Welcome To Employee Wage Compution Problem"
 
-#CONSTANTS
-WORK=2
+#CONSTANT
 WAGE_PER_HOUR=20
-FULL_DAY_HOUR=8
-HALF_DAY_HOUR=4
-IS_PRESENT=1
-IS_FULL_DAY=0
-IS_HALF_DAY=1
-MONTH=20
-TOTAL_HOURS=100
+IS_FULL_TIME=2
+IS_PART_TIME=1
+EMPLOYEE_HOUR_FULLTIME=8
+EMPLOYEE_HOUR_PARTTIME=4
 
-#VARIABLES
-randomNumber=0
-randomNumber=$(( RANDOM % $WORK ))
-randomNumber2=$(( RANDOM % $WORK ))
-wage=0
-attendance=0
+# USER INPUTE
+read -p "To number of working days :" NUMBER_OF_WORKING_DAYS
+read -p "To number of working hour :" NUMBER_OF_WORKING_HOURS
+
+#VARIABLE
 totalWage=0
-totalWorkingHours=0
-days=0
-employeeHours=0
-hours=0
+totalEmployeeHours=0
+totalWorkingDays=0
 
-#GET HOURS 8 or 4
-function getHours(){
-	 case $1 in
-		$IS_FULL_DAY)
-			echo $FULL_DAY_HOUR
-		;;
-		$IS_HALF_DAY)
-			echo $HALF_DAY_HOUR
-		;;
-		*)
-			echo 0
-		;;
-	esac
+#TO FUNCTION TO GET WORK HOURS
+function getWorkHours()
+{
+	randomShiftCheck=$((RANDOM%3))
+	case $randomShiftCheck in
+
+		$IS_FULL_TIME )
+			employeeHour=$((EMPLOYEE_HOUR_FULLTIME))
+			;;
+		$IS_PART_TIME )
+			employeeHour=$((EMPLOYEE_HOUR_PARTTIME))
+			;;
+		* )
+			employeeHour=0
+			;;
+   esac
+	echo $employeeHour
 }
 
-#WHILE DAY IS LESS THAN 20 AND HOURS IS LESS THAN 100 TILL CHECK
-while [ $days -lt $MONTH -a $totalWorkingHours -lt $TOTAL_HOURS ]
+#FUNCTION TO CALCULATE WAGE
+function calculateWage()
+{
+	employeeHour=$1
+	wage=$(($employeeHour*$WAGE_PER_HOUR))
+	echo $wage
+}
+
+#GET WORK HOUR FROM FUNCTION AND CALCULATE DAILY WAGE TILL CONDITION SATISFIED
+while [[ $totalEmployeeHours -lt $NUMBER_OF_WORKING_HOURS && $totalWorkingDays -lt $NUMBER_OF_WORKING_DAYS ]]
 do
-	days=$(( $days + 1 ))
-	case $randomNumber in
-		$IS_PRESENT)
-			attendance="Present"
-			hours="$( getHours $(( $randomNumber2 )) )"
-			wage=$(( $WAGE_PER_HOUR * $hours ))
-			employeeHours=$hours
-		;;
-		0)
-			attendance="Absent"
-			employeeHours=0
-		;;
-	esac
-   	totalWage=$(( $totalWage + $wage ))
-		totalWorkingHours=$(( $totalWorkingHours + $employeeHours ))
+	((totalWorkingDays++))
+	dailyWage[totalWorkingDays]=$(calculateWage $(getWorkHours))
+	totalEmployeeHours=$(($totalEmployeeHours + $(getWorkHours)))
 done
-	printf " Employee monthly wage is : $totalWage \n"	
+
+#TO PRINT WAGES FOR A MONTH
+totalWageOfMonth=$(($(calculateWage $totalEmployeeHours)))
+echo "Daily wages: ${dailyWage[@]}"
+echo "Total Wage:" $totalWageOfMonth
